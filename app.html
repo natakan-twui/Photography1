@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photography Location Recommender</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-icon">📷</div><div><strong>Photography</strong><small>GRAPH RECOMMENDER</small></div></div>
+    <div class="profile-mini"><div class="avatar">👤</div><div><b>ผู้จัดทำ</b><span>ณฐกาญจน์ โพธิ์ทอง</span><small>Photography Location Recommender</small></div></div>
+    <div class="nav-label">เมนูหลัก</div>
+    <button class="nav-item active" data-page="dashboard"><span>✦</span> แนะนำสถานที่ถ่ายรูป</button>
+    <button class="nav-item" data-page="people"><span>♧</span> จัดการคน & เพื่อน</button>
+    <button class="nav-item" data-page="places"><span>⌖</span> จัดการสถานที่ & ความชอบ</button>
+    <button class="nav-item" data-page="graph"><span>◎</span> กราฟความสัมพันธ์</button>
+    <div class="sidebar-bottom"><div class="db-pill"><span class="pulse"></span><span id="connection-label">กำลังตรวจสอบ Neo4j…</span></div><small>Powered by Neo4j Graph Database</small></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div><span class="eyebrow">YOUR PHOTO JOURNEY</span><h1 id="page-title">แนะนำสถานที่ถ่ายรูป</h1></div><div class="top-actions"><button class="btn btn-quiet" id="refresh-btn">↻ รีเฟรชข้อมูล</button><a class="btn btn-dark" href="https://natakan-twui.github.io/Photography/" target="_blank" rel="noreferrer">กลับหน้ารวมโปรเจกต์ ↗</a></div></header>
+    <div id="notice" class="notice hidden" role="status"></div>
+    <section class="page active" id="page-dashboard">
+      <div class="hero-banner"><div class="hero-copy"><span class="hero-tag">DISCOVER • CONNECT • CREATE</span><h2>ทุกความชอบ<br>พาไปเจอที่ใหม่ ๆ</h2><p>ค้นหาสถานที่ถ่ายรูปจากความชอบของคุณและเพื่อน ผ่านความสัมพันธ์ใน Graph Database</p><div class="hero-select"><label for="dash-user">เลือกโปรไฟล์ผู้ใช้</label><select id="dash-user"></select></div></div><div class="hero-art"><div class="sun"></div><div class="art-frame">📸</div><span class="float-star star1">✦</span><span class="float-star star2">✧</span><span class="art-caption">MEMORIES<br>IN THE MAKING</span></div></div>
+      <div class="metrics-grid"><div class="metric-card"><div class="metric-icon pink">♙</div><span>ผู้ใช้งาน</span><strong id="metric-users">—</strong><small>คนในเครือข่าย</small></div><div class="metric-card"><div class="metric-icon violet">⌖</div><span>สถานที่ถ่ายรูป</span><strong id="metric-locations">—</strong><small>แห่งให้ค้นพบ</small></div><div class="metric-card"><div class="metric-icon peach">♥</div><span>ความชอบ</span><strong id="metric-likes">—</strong><small>ความสัมพันธ์ LIKES</small></div><div class="metric-card"><div class="metric-icon blue">♧</div><span>ความสัมพันธ์เพื่อน</span><strong id="metric-friends">—</strong><small>เส้นเชื่อม FRIEND</small></div></div>
+      <div class="section-heading"><div><span class="eyebrow">PERSONALIZED FOR YOU</span><h2>สถานที่ที่เพื่อนแนะนำ</h2><p id="recommend-subtitle">เลือกผู้ใช้เพื่อดูสถานที่ที่อาจชอบ</p></div><span class="soft-badge">✦ แนะนำจากกราฟ</span></div>
+      <div id="recommendations" class="place-grid"><div class="empty-state">กำลังโหลดคำแนะนำ…</div></div>
+      <div class="section-heading compact"><div><span class="eyebrow">YOUR CIRCLE</span><h2>เพื่อนในเครือข่าย</h2></div></div><div id="friend-chips" class="friend-list"></div>
+    </section>
+    <section class="page" id="page-people">
+      <div class="page-intro"><span class="eyebrow">PEOPLE & CONNECTIONS</span><h2>จัดการคนและเพื่อน</h2><p>เพิ่มผู้ใช้ สร้างความสัมพันธ์ หรือจัดการข้อมูลที่อยู่ใน Neo4j</p></div>
+      <div class="management-grid">
+        <div class="panel"><div class="panel-title"><span class="panel-icon">＋</span><div><h3>เพิ่มคนใหม่</h3><p>สร้างโหนด User ในฐานข้อมูล</p></div></div><form id="add-user-form" class="form-stack"><label>ชื่อผู้ใช้<input name="name" placeholder="เช่น Alex" required maxlength="100"></label><button class="btn btn-primary" type="submit">＋ เพิ่มผู้ใช้</button></form></div>
+        <div class="panel"><div class="panel-title"><span class="panel-icon lilac">♧</span><div><h3>เพิ่มความสัมพันธ์เพื่อน</h3><p>เชื่อมผู้ใช้สองคนเข้าด้วยกัน</p></div></div><form id="add-friend-form" class="form-stack"><label>ผู้ใช้คนที่ 1<select name="person1" id="friend-one" required></select></label><label>ผู้ใช้คนที่ 2<select name="person2" id="friend-two" required></select></label><button class="btn btn-primary" type="submit">↔ สร้างความสัมพันธ์</button></form></div>
+      </div>
+      <div class="panel table-panel"><div class="section-heading compact"><div><h2>รายชื่อผู้ใช้</h2><p>ผู้ใช้ทั้งหมดที่บันทึกอยู่ใน Graph</p></div><span class="count-badge" id="people-count">0 คน</span></div><div id="people-table"></div></div>
+      <div class="panel table-panel"><div class="section-heading compact"><div><h2>ความสัมพันธ์เพื่อน</h2><p>ลบเส้นความสัมพันธ์ได้โดยไม่ลบผู้ใช้</p></div></div><div id="friend-table"></div></div>
+    </section>
+    <section class="page" id="page-places">
+      <div class="page-intro"><span class="eyebrow">LOCATIONS & LIKES</span><h2>จัดการสถานที่และความชอบ</h2><p>เพิ่มสถานที่พร้อม URL รูปภาพ และบันทึกว่าผู้ใช้ชอบสถานที่ใด</p></div>
+      <div class="management-grid">
+        <div class="panel"><div class="panel-title"><span class="panel-icon">⌖</span><div><h3>เพิ่มสถานที่</h3><p>ข้อมูลจะถูกบันทึกเป็นโหนด Location</p></div></div><form id="add-location-form" class="form-stack"><label>ชื่อสถานที่<input name="name" placeholder="เช่น สวนเบญจกิติ" required maxlength="200"></label><label>URL รูปภาพ (ถ้ามี)<input name="image" type="url" placeholder="https://example.com/photo.jpg"></label><button class="btn btn-primary" type="submit">＋ เพิ่มสถานที่</button></form></div>
+        <div class="panel"><div class="panel-title"><span class="panel-icon peach">♥</span><div><h3>บันทึกสถานที่ที่ชอบ</h3><p>สร้างความสัมพันธ์ User → LIKES → Location</p></div></div><form id="add-like-form" class="form-stack"><label>ผู้ใช้<select id="like-user" name="user" required></select></label><label>สถานที่<select id="like-location" name="location" required></select></label><button class="btn btn-primary" type="submit">♥ บันทึกความชอบ</button></form></div>
+      </div>
+      <div class="section-heading compact"><div><h2>สถานที่ทั้งหมด</h2><p>เลือกจัดการสถานที่จากรายการด้านล่าง</p></div><span class="count-badge" id="place-count">0 แห่ง</span></div>
+      <div id="all-places" class="place-grid admin-grid"></div>
+      <div class="panel table-panel"><div class="section-heading compact"><div><h2>ความชอบของผู้ใช้</h2><p>ยกเลิกความสัมพันธ์ LIKES ได้จากรายการ</p></div></div><div id="likes-table"></div></div>
+      <div class="panel seed-panel"><div><h3>ข้อมูลตัวอย่างสำหรับเริ่มต้น</h3><p>เพิ่มผู้ใช้ 10 คน สถานที่ 10 แห่ง และความสัมพันธ์ตัวอย่าง โดยไม่ลบข้อมูลที่มีอยู่</p></div><button id="seed-btn" class="btn btn-outline">เพิ่มข้อมูลตัวอย่าง</button></div>
+    </section>
+    <section class="page" id="page-graph">
+      <div class="page-intro"><span class="eyebrow">GRAPH EXPLORER</span><h2>กราฟความสัมพันธ์</h2><p>ดูความเชื่อมโยงระหว่างผู้ใช้ สถานที่ และความชอบที่บันทึกใน Neo4j</p></div>
+      <div class="panel graph-panel"><div class="graph-toolbar"><div><h3>Relationship map</h3><p>เส้นสีชมพู = FRIEND · เส้นสีม่วง = LIKES</p></div><label>แสดงเครือข่าย<select id="graph-user"></select></label></div><div id="graph-canvas" class="graph-canvas"><div class="empty-state">กำลังสร้างกราฟ…</div></div><div class="graph-legend"><span><i class="legend-dot user-dot"></i>ผู้ใช้ (User)</span><span><i class="legend-dot place-dot"></i>สถานที่ (Location)</span><span><i class="legend-line friend-line"></i>FRIEND</span><span><i class="legend-line like-line"></i>LIKES</span></div></div>
+    </section>
+    <footer>Photography Location Recommender <span>•</span> HTML / CSS / JavaScript + FastAPI + Neo4j</footer>
+  </main>
+</div>
+<div id="confirm-modal" class="modal hidden"><div class="modal-card"><div class="modal-icon">!</div><h3 id="modal-title">ยืนยันการลบ</h3><p id="modal-message">ต้องการลบรายการนี้หรือไม่</p><div class="modal-actions"><button class="btn btn-quiet" id="modal-cancel">ยกเลิก</button><button class="btn btn-danger" id="modal-confirm">ยืนยันลบ</button></div></div></div>
+<script src="./app.js"></script>
+</body></html>
